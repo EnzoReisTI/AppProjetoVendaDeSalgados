@@ -1,5 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+
+const larguraTela = Dimensions.get('window').width;
+const larguraCard = (larguraTela - 80) / 3; // divide a tela em 3 colunas com espaçamento
 
 type Produto = {
   id: string;
@@ -15,13 +18,13 @@ type Props = {
 
 export default function ProdutoCard({ produto, quantidade, setQuantidade }: Props) {
   return (
-    <View style={styles.card}>
-      <Text style={styles.nome}>{produto.nome}</Text>
+    <View style={[styles.card, { width: larguraCard, height: larguraCard }]}>
+      <Text style={styles.nome} numberOfLines={2}>{produto.nome}</Text>
       <Text style={styles.preco}>R$ {produto.preco}</Text>
       <View style={styles.controle}>
         <TouchableOpacity
           style={styles.botaoControle}
-          onPress={() => setQuantidade(produto.id, quantidade > 0 ? quantidade - 1 : 0)}
+          onPress={() => setQuantidade(produto.id, Math.max(quantidade - 1, 0))}
         >
           <Text style={styles.botaoTexto}>-</Text>
         </TouchableOpacity>
@@ -38,11 +41,37 @@ export default function ProdutoCard({ produto, quantidade, setQuantidade }: Prop
 }
 
 const styles = StyleSheet.create({
-  card: { padding: 15, borderWidth: 1, borderColor: '#ccc', marginBottom: 10, borderRadius: 8 },
-  nome: { fontSize: 18 },
-  preco: { fontSize: 16, color: '#555', marginBottom: 10 },
-  controle: { flexDirection: 'row', alignItems: 'center' },
-  botaoControle: { borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 5, width: 40, alignItems: 'center' },
-  botaoTexto: { fontSize: 18 },
-  quantidade: { fontSize: 16, marginHorizontal: 10 },
+  card: {
+    margin: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  nome: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  preco: { fontSize: 13, color: '#555', marginBottom: 8 },
+  controle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  botaoControle: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 3,
+    width: 25,
+    alignItems: 'center',
+  },
+  botaoTexto: { fontSize: 16 },
+  quantidade: { fontSize: 14, marginHorizontal: 6 },
 });
