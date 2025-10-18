@@ -1,35 +1,27 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
-// Definimos o "contrato" de props com TypeScript.
-// Este componente espera receber uma propriedade 'onLogin',
-// que deve ser uma função que não retorna nada (void).
 type LoginScreenProps = {
   onLogin: () => void;
 };
 
 export default function LoginScreen({ onLogin }: LoginScreenProps) {
-  // 1. Adicionamos o estado para "lembrar" o que o usuário digita
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // 2. A função de login agora é 'async' para lidar com a chamada de rede
   const handleLoginPress = async () => {
-    // Validação básica para não enviar dados vazios
     if (!email || !password) {
       Alert.alert("Erro", "Por favor, preencha o e-mail e a senha.");
       return;
     }
   
-    // --- LÓGICA DE REGISTRO NO SERVIDOR ---
     try {
-      // O fetch envia uma requisição para o nosso servidor backend
-      const response = await fetch('http://:4000/registrar-login', {
+      const response = await fetch('http://SEU_IP_LOCAL:4000/registrar-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: email }), // Enviamos o e-mail no corpo da requisição
+        body: JSON.stringify({ email: email }),
       });
       
       const responseData = await response.json();
@@ -44,74 +36,94 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       Alert.alert("Erro de Conexão", "Não foi possível registrar o login. Verifique o servidor.");
     }
 
-    // 3. Após tentar o registro, a lógica de mudar de tela continua
     onLogin();
   };
 
   return (
+    // O container principal agora serve como o fundo da tela
     <View style={styles.container}>
-      <Text style={styles.title}>Bem-vindo</Text>
+        {/* E criamos um container para o formulário, para aplicar a borda e a sombra */}
+        <View style={styles.formContainer}>
+            <Text style={styles.title}>Bem-vindo</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Digite seu e-mail"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email} // Conectado ao estado
-        onChangeText={setEmail} // Atualiza o estado
-      />
+            <TextInput
+                style={styles.input}
+                placeholder="Digite seu e-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+            />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Digite sua senha"
-        secureTextEntry={true}
-        value={password} // Conectado ao estado
-        onChangeText={setPassword} // Atualiza o estado
-      />
+            <TextInput
+                style={styles.input}
+                placeholder="Digite sua senha"
+                secureTextEntry={true}
+                value={password}
+                onChangeText={setPassword}
+            />
 
-      <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
+                <Text style={styles.buttonText}>Entrar</Text>
+            </TouchableOpacity>
+        </View>
     </View>
   );
 }
 
-// O stylesheet continua o mesmo
+// ▼▼▼ STYLESHEET ATUALIZADO ▼▼▼
 const styles = StyleSheet.create({
+  // Estilo para a tela inteira, que centraliza o formulário
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff', // Fundo branco, pode ser alterado
+  },
+  // Estilo para a caixa do formulário, traduzido do seu #form-login
+  formContainer: {
+    width: 320, // Um pouco maior para telas de celular
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    // Sombra para iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    // Sombra para Android
+    elevation: 5,
   },
+  // Título, traduzido do #form-login h1
   title: {
-    fontSize: 32,
+    fontSize: 28, // Ajustado para celular
     fontWeight: 'bold',
-    marginBottom: 40,
+    textAlign: 'center', // Propriedade correspondente
+    marginBottom: 20,
   },
+  // Inputs, traduzido do #form-login input[...]
   input: {
     width: '100%',
-    height: 50,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    marginBottom: 15,
+    height: 45, // Altura ajustada
+    marginBottom: 20,
+    paddingHorizontal: 10, // Padding horizontal no React Native
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#ccc',
+    borderRadius: 5, // Borda arredondada
   },
+  // Botão, traduzido do #form-login input[type="submit"]
   button: {
     width: '100%',
-    height: 50,
-    backgroundColor: '#007bff',
-    borderRadius: 8,
+    height: 45,
+    backgroundColor: '#4CAF50', // Cor verde do seu exemplo
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
+    borderRadius: 5,
   },
   buttonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
