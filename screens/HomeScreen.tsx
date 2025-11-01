@@ -1,106 +1,66 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking, ScrollView, Dimensions } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 import ProdutoCard from '../components/ProdutoCard';
 
-type Produto = {
-  id: string;
-  nome: string;
-  preco: number;
-};
 
-const produtos: Produto[] = [
-  { id: '1', nome: 'Hambúrguer c/ catupiry e mussarela', preco: 6 },
-  { id: '2', nome: 'X-burguer (carne, catupiry, mussarela e presunto)', preco: 6 },
-  { id: '3', nome: 'Joelho de frango c/ catupiry e mussarela', preco: 6 },
-  { id: '4', nome: 'Hambúrguer c/ cheddar e mussarela', preco: 6 },
-  { id: '5', nome: 'Joelho de frango c/ catupiry e mussarela', preco: 6 },
-  { id: '6', nome: 'Joelho de queijo c/ presunto e catupiry', preco: 6 },
-  { id: '7', nome: 'Esfiha de carne moída', preco: 6 },
-  { id: '8', nome: 'Salsicha c/ cheddar e mussarela', preco: 6 },
-  { id: '9', nome: 'Cachorro-quente (salsicha, maionese, tomate, cebola e pimentão)', preco: 6 },
+
+const produtos = [
+  { id: '1', nome: 'Hambúrguer c/ catupiry e mussarela', preco: 6.0, imagem: require('../assets/Hambúrguer-com-catupiry.png') },
+  { id: '2', nome: 'Hambúrguer c/ cheddar e mussarela', preco: 6.0, imagem: require('../assets/Hambúrguer-com-cheddar.png') },
+  { id: '3', nome: 'Joelho de frango c/ catupiry e mussarela', preco: 6.0, imagem: require('../assets/Mini-assado-joelho-de-queijo-com-presunto.png') }, 
+  { id: '4', nome: 'Joelho de queijo c/ presunto e catupiry', preco: 6.0, imagem: require('../assets/Mini-assado-joelho-de-queijo-com-presunto.png') },
+  { id: '6', nome: 'Salsicha c/ cheddar e mussarela', preco: 6.0, imagem: require('../assets/Salsicha-com-cheddar.png') },
 ];
 
+
 export default function HomeScreen() {
-  const [quantidades, setQuantidades] = useState<Record<string, number>>({});
+  const [quantidades, setQuantidades] = useState<{ [key: string]: number }>({});
 
-  const handleQuantidade = (id: string, valor: number) => {
-    setQuantidades({ ...quantidades, [id]: valor });
+  const setQuantidade = (id: string, valor: number) => {
+    setQuantidades(prev => ({ ...prev, [id]: valor }));
   };
 
-  const enviarPedido = () => {
-    let mensagem = '🍴 *Pedido de Salgados*\n\n';
-    produtos.forEach(produto => {
-      const qtd = quantidades[produto.id] || 0;
-      if (qtd > 0) {
-        mensagem += `• ${produto.nome}: ${qtd} x R$${produto.preco} = R$${qtd * produto.preco}\n`;
-      }
-    });
-
-    const total = produtos.reduce(
-      (acc, p) => acc + (quantidades[p.id] || 0) * p.preco,
-      0
-    );
-
-    mensagem += `\n💰 *Total:* R$${total.toFixed(2)}\n`;
-    mensagem += '\n📦 Enviado via Dunamis Salgados App';
-
-    const numeroWhatsApp = '5521969714096';
-    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
-    Linking.openURL(url);
-  };
+  const renderItem = ({ item }: { item: typeof produtos[0] }) => (
+    <View style={styles.itemWrapper}>
+      <ProdutoCard
+        produto={item}
+        quantidade={quantidades[item.id] || 0}
+        setQuantidade={setQuantidade}
+      />
+    </View>
+  );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.titulo}>Dunamis Salgados/Assados</Text>
-
-      <View style={styles.grid}>
-        {produtos.slice(0, 9).map(item => (
-          <ProdutoCard
-            key={item.id}
-            produto={item}
-            quantidade={quantidades[item.id] || 0}
-            setQuantidade={handleQuantidade}
-          />
-        ))}
-      </View>
-
-      <TouchableOpacity style={styles.botao} onPress={enviarPedido}>
-        <Text style={styles.botaoTexto}>Enviar Pedido</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    <View style={styles.container}>
+      <FlatList
+        data={produtos}
+        numColumns={2}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.lista}
+        showsVerticalScrollIndicator={false}
+        columnWrapperStyle={styles.row} // espaçamento entre colunas
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    paddingVertical: 30,
-    backgroundColor: '#fff',
+    flex: 1,
+    backgroundColor: '#fafafa',
+    paddingTop: 10,
   },
-  titulo: {
-    fontFamily: 'monospace',
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
+  lista: {
+    paddingBottom: 20,
+    paddingHorizontal: 8,
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    width: '100%',
+  row: {
+    justifyContent: 'space-between',
   },
-  botao: {
-    backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-    width: '80%',
-  },
-  botaoTexto: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+  itemWrapper: {
+    flex: 1,
+    // garante que cada card ocupe metade da largura disponível, menos margin/padding
+    paddingHorizontal: 4,
   },
 });
