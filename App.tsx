@@ -1,36 +1,58 @@
-// App.tsx
-
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, Text, View } from 'react-native'; // Removido StyleSheet
 import HomeScreen from './screens/HomeScreen';
-import LoginScreen from './screens/LoginScreen'; // 1. Importe sua nova tela
+import LoginScreen from './screens/LoginScreen'; 
+import RegistroScreen from './screens/registerscreen'; 
+import { initDatabase } from './dbService';
+import { styles } from './AppStyles'; // 👈 Importa o estilo
+
+type AuthMode = 'login' | 'register' | 'home';
 
 export default function App() {
-  // 2. O App agora tem um estado para controlar se o usuário está logado.
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>('login'); 
+  const [dbIsReady, setDbIsReady] = useState(false);
 
-  // 3. Esta é a função que será passada para a LoginScreen.
-  // Quando chamada, ela atualiza o estado do App.
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
+  // Funções de navegação
+  const goToHome = () => setAuthMode('home');
+  const goToRegister = () => setAuthMode('register');
+  const goToLogin = () => setAuthMode('login');
+
+  // Inicialização do DB na montagem
+  useEffect(() => {
+    initDatabase()
+      .then(() => setDbIsReady(true))
+      .catch(error => console.error("Falha na inicialização do DB:", error));
+  }, []);
+
+  if (!dbIsReady) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Carregando dados do aplicativo...</Text> 
+      </View>
+    );
+  }
+
+  const renderScreen = () => {
+    switch (authMode) {
+      case 'home':
+        return <HomeScreen />;
+      case 'register':
+        return <RegistroScreen onRegisterSuccess={goToLogin} />; 
+      case 'login':
+      default:
+        return (
+          <LoginScreen 
+            onLogin={goToHome} 
+            onNavigateToRegister={goToRegister}
+          />
+        );
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 4. Renderização Condicional: */}
-      {/* Se isLoggedIn for true, mostra a HomeScreen. */}
-      {/* Se for false, mostra a LoginScreen e passa a função para ela. */}
-      {isLoggedIn ? (
-        <HomeScreen />
-      ) : (
-        <LoginScreen onLogin={handleLoginSuccess} />
-      )}
+      {renderScreen()}
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+// Removido todo o bloco de StyleSheet.create

@@ -1,130 +1,145 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
+// 1. ATUALIZAÇÃO DAS PROPS: Adicionamos onNavigateToRegister
 type LoginScreenProps = {
-  onLogin: () => void;
+  onLogin: () => void;
+  onNavigateToRegister: () => void; // Função para ir para a tela de registro
 };
 
-export default function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+// Removemos a importação de 'RegisterScreen' que não era usada aqui.
+// import RegisterScreen from '../screens/registerscreen'; 
 
-  const handleLoginPress = async () => {
-    if (!email || !password) {
-      Alert.alert("Erro", "Por favor, preencha o e-mail e a senha.");
-      return;
-    }
-  
-    try {
-      const response = await fetch('http://SEU_IP_LOCAL:4000/registrar-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email }),
-      });
-      
-      const responseData = await response.json();
-      
-      if (response.ok) {
-        console.log('Resposta do servidor:', responseData.message);
-      } else {
-        console.error('Erro do servidor:', responseData.message);
-      }
-    } catch (error) {
-      console.error('Falha ao conectar com o servidor:', error);
-      Alert.alert("Erro de Conexão", "Não foi possível registrar o login. Verifique o servidor.");
-    }
+export default function LoginScreen({ onLogin, onNavigateToRegister }: LoginScreenProps) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-    onLogin();
-  };
+  const handleLoginPress = async () => {
+    if (!email || !password) {
+      Alert.alert("Erro", "Por favor, preencha o e-mail e a senha.");
+      return;
+    }
+  
+    try {
+      // NOTE: Substitua 'SEU_IP_LOCAL' pelo seu IP ou domínio real
+      const response = await fetch('http://SEU_IP_LOCAL:4000/registrar-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email }),
+      });
+      
+      const responseData = await response.json();
+      
+      if (response.ok) {
+        console.log('Resposta do servidor:', responseData.message);
+      } else {
+        console.error('Erro do servidor:', responseData.message);
+      }
+    } catch (error) {
+      console.error('Falha ao conectar com o servidor:', error);
+      Alert.alert("Erro de Conexão", "Não foi possível registrar o login. Verifique o servidor.");
+    }
 
-  return (
-    // O container principal agora serve como o fundo da tela
-    <View style={styles.container}>
-        {/* E criamos um container para o formulário, para aplicar a borda e a sombra */}
-        <View style={styles.formContainer}>
-            <Text style={styles.title}>Bem-vindo</Text>
+    onLogin();
+  };
 
-            <TextInput
-                style={styles.input}
-                placeholder="Digite seu e-mail"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-            />
+  return (
+    <View style={styles.container}>
+        <View style={styles.formContainer}>
+            <Text style={styles.title}>Bem-vindo</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Digite sua senha"
-                secureTextEntry={true}
-                value={password}
-                onChangeText={setPassword}
-            />
+            <TextInput
+                style={styles.input}
+                placeholder="Digite seu e-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+            />
 
-            <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
-                <Text style={styles.buttonText}>Entrar</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Digite sua senha"
+                secureTextEntry={true}
+                value={password}
+                onChangeText={setPassword}
+            />
+
+            <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
+                <Text style={styles.buttonText}>Entrar</Text>
+            </TouchableOpacity>
+
+            {/* 2. NOVO BOTÃO DE REGISTRO */}
+            <TouchableOpacity 
+                style={styles.registerLink} 
+                onPress={onNavigateToRegister} // Chamamos a função recebida via props
+            >
+                <Text style={styles.registerText}>Não tem conta? Cadastre-se</Text>
             </TouchableOpacity>
-        </View>
-    </View>
-  );
+        </View>
+    </View>
+  );
 }
 
-// ▼▼▼ STYLESHEET ATUALIZADO ▼▼▼
 const styles = StyleSheet.create({
-  // Estilo para a tela inteira, que centraliza o formulário
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff', // Fundo branco, pode ser alterado
-  },
-  // Estilo para a caixa do formulário, traduzido do seu #form-login
-  formContainer: {
-    width: 320, // Um pouco maior para telas de celular
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    // Sombra para iOS
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    // Sombra para Android
-    elevation: 5,
-  },
-  // Título, traduzido do #form-login h1
-  title: {
-    fontSize: 28, // Ajustado para celular
-    fontWeight: 'bold',
-    textAlign: 'center', // Propriedade correspondente
-    marginBottom: 20,
-  },
-  // Inputs, traduzido do #form-login input[...]
-  input: {
-    width: '100%',
-    height: 45, // Altura ajustada
-    marginBottom: 20,
-    paddingHorizontal: 10, // Padding horizontal no React Native
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5, // Borda arredondada
-  },
-  // Botão, traduzido do #form-login input[type="submit"]
-  button: {
-    width: '100%',
-    height: 45,
-    backgroundColor: '#4CAF50', // Cor verde do seu exemplo
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  formContainer: {
+    width: 320,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  input: {
+    width: '100%',
+    height: 45,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  button: {
+    width: '100%',
+    height: 45,
+    backgroundColor: '#4CAF50',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+    // NOVO ESTILO: Link para o registro
+    registerLink: {
+        marginTop: 15,
+        alignItems: 'center',
+    },
+    registerText: {
+        color: '#007bff', // Cor de link (azul, comum em cadastros)
+        fontSize: 14,
+        fontWeight: '600',
+        textDecorationLine: 'underline',
+    }
 });

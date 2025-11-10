@@ -5,12 +5,15 @@ import ProdutoCard from '../components/ProdutoCard';
 
 
 const produtos = [
-  { id: '1', nome: 'Hambúrguer c/ catupiry e mussarela', preco: 6.0, imagem: require('../assets/Hamburger-com-catupiry.png') },
-  { id: '2', nome: 'Hambúrguer c/ cheddar e mussarela', preco: 6.0, imagem: require('../assets/Hamburger-com-cheddar.png') },
-  { id: '3', nome: 'Joelho de frango c/ catupiry e mussarela', preco: 6.0, imagem: require('../assets/Mini-assado-joelho-de-queijo-com-presunto.png') }, 
-  { id: '4', nome: 'Joelho de queijo c/ presunto e catupiry', preco: 6.0, imagem: require('../assets/Mini-assado-joelho-de-queijo-com-presunto.png') },
-  { id: '6', nome: 'Salsicha c/ cheddar e mussarela', preco: 6.0, imagem: require('../assets/Salsicha-com-cheddar.png') },
+  { id: '1', nome: 'Hambúrger c/ catupiry', preco: 6.0, imagem: require('../assets/H1.png')},
+  { id: '2', nome: 'Hamburger c/cheedar', preco: 6.0, imagem: require('../assets/H2.png')},
+  { id: '3', nome: 'Mini assado hamburger C/ cheddar', preco: 6.0, imagem: require('../assets/MA1.png')},
+  { id: '4', nome: 'Mini-assado-joelho-de-queijo-com-presunto', preco: 6.0, imagem: require('../assets/MA2.png')},
+  { id: '5', nome: 'Mini-assado-salsicha-com-cheddar', preco: 6.0, imagem: require('../assets/MA3.png')},
+  { id: '6', nome: 'Salsicha-com-cheddar', preco: 6.0, imagem: require('../assets/S1.png')},
+  
 ];
+
 
 
 export default function HomeScreen() {
