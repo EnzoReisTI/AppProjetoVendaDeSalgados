@@ -21,8 +21,9 @@ const saveWebUsers = (users: any[]) => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
     }
 };
+console.log(Platform.OS + ' teste console log')
 
-if (Platform.OS !== 'web') {
+if (Platform.OS !== 'web') { // Modificar esse string para abrir 
     db = SQLite.openDatabase(DATABASE_NAME); 
 } else {
     // Mock para Web: Não inicializamos o SQLite.

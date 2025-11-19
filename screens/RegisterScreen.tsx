@@ -9,6 +9,7 @@ type Props = {
 
 export default function RegistroScreen({ onRegisterSuccess }: Props) {
     const [nome, setNome] = useState('');
+    const [CEP, setCep] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
