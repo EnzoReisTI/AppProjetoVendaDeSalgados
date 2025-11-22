@@ -1,4 +1,4 @@
-// AppStyles.ts
+
 
 import { StyleSheet } from 'react-native';
 

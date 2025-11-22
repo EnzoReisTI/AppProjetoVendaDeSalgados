@@ -1,25 +1,15 @@
 import React, { useState } from 'react';
-import { 
-    View, 
-    Text, 
-    TextInput, 
-    TouchableOpacity, 
-    StyleSheet, 
-    Platform, 
-    KeyboardAvoidingView, 
-    ScrollView, 
-    ImageBackground, 
-    Image, 
-    StatusBar,
-    Alert
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, KeyboardAvoidingView, ScrollView, ImageBackground, Image, StatusBar, Alert} from 'react-native';
 
-// 1. IMPORT DO SUPABASE (Substituindo o dbService antigo)
+
 import { supabase } from '../BancoDeDados';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-type LoginScreenProps = { onLogin: (user: any) => void; onNavigateToRegister: () => void; };
+type LoginScreenProps = { 
+    onLogin: (user: any) => void; 
+    onNavigateToRegister: () => void; 
+};
 
 export default function LoginScreen({ onLogin, onNavigateToRegister }: LoginScreenProps) {
     const [email, setEmail] = useState('');
@@ -29,10 +19,11 @@ export default function LoginScreen({ onLogin, onNavigateToRegister }: LoginScre
     
     const insets = useSafeAreaInsets(); 
 
+ 
     const BACKGROUND_IMAGE = require('../assets/IMGF.png'); 
     const LOGO_IMAGE = require('../assets/LGT.png');
 
-    // --- NOVA LÓGICA DE LOGIN (SUPABASE) ---
+    // --- LÓGICA DE LOGIN (SUPABASE) ---
     const handleLoginPress = async () => {
         setLoginError('');
         
@@ -43,7 +34,7 @@ export default function LoginScreen({ onLogin, onNavigateToRegister }: LoginScre
     
         setLoading(true);
         try {
-            // PASSO 1: Autenticar (Verifica Email e Senha no Auth do Supabase)
+            
             const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: senha,
@@ -53,31 +44,35 @@ export default function LoginScreen({ onLogin, onNavigateToRegister }: LoginScre
                 throw new Error("E-mail ou senha incorretos.");
             }
 
-            // PASSO 2: Buscar dados completos na tabela 'usuarios'
-            // O auth só devolve ID e Email. Se você precisa do Nome/Telefone, buscamos aqui:
+            
             const { data: userData, error: userError } = await supabase
                 .from('usuarios')
                 .select('*')
                 .eq('email', email)
-                .single(); // Pega apenas 1
+                .single();
 
+           
             if (userError || !userData) {
-                throw new Error("Usuário autenticado, mas perfil não encontrado.");
+                
+                if (userError?.code === 'PGRST116' || !userData) {
+                    throw new Error("Login correto, mas perfil não encontrado. Tente criar a conta novamente.");
+                }
+                throw new Error("Erro ao buscar perfil do usuário.");
             }
 
-            // PASSO 3: Atualizar 'last_login' na nuvem (Opcional, mas mantém sua lógica antiga)
-            const now = new Date().toISOString(); // Supabase prefere formato ISO
+            
+            const now = new Date().toISOString(); 
             await supabase
                 .from('usuarios')
-                .update({ last_login: now }) // Precisaria ter essa coluna no banco (se não tiver, comente essa linha)
+                .update({ last_login: now })
                 .eq('id', userData.id);
 
-            // Sucesso! Passa o usuário completo para o App
+            
             onLogin({ ...userData, last_login: now });
 
         } catch (error: any) {
-            console.error(error);
-            setLoginError(error.message || "Erro no login. Tente novamente.");
+            console.error("Erro Login:", error);
+            setLoginError(error.message || "Erro ao conectar.");
         } finally {
             setLoading(false);
         }
@@ -144,9 +139,6 @@ export default function LoginScreen({ onLogin, onNavigateToRegister }: LoginScre
     );
 }
 
-// ------------------------------------------------------------------
-// ESTILOS VISUAIS (Idênticos ao seu original)
-// ------------------------------------------------------------------
 const styles = StyleSheet.create({ 
     backgroundImage: { flex: 1, width: '100%', height: '100%' }, 
     overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' }, 

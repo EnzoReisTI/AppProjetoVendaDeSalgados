@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Image, 
-  LayoutAnimation, 
-  Platform, 
-  UIManager,
-  Pressable
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, LayoutAnimation, Platform, UIManager,Pressable} from 'react-native';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -44,7 +34,7 @@ export default function ProdutoCard({ produto, quantidade, setQuantidade }: Prop
       android_ripple={{ color: '#f0f0f0' }}
     >
       <View style={styles.headerContent}>
-        {/* Imagem menor (70px) */}
+       
         <View style={styles.imageContainer}>
             {produto.imagem ? (
             <Image source={produto.imagem} style={styles.imagemProduto} />
@@ -64,7 +54,6 @@ export default function ProdutoCard({ produto, quantidade, setQuantidade }: Prop
             )}
         </View>
 
-        {/* Controles compactos */}
         <View style={styles.controleCompacto}>
             <TouchableOpacity
                 style={[styles.botaoControle, { backgroundColor: '#ff5252' }]}
@@ -84,7 +73,7 @@ export default function ProdutoCard({ produto, quantidade, setQuantidade }: Prop
         </View>
       </View>
 
-      {/* Descrição (Expandida) */}
+    
       {expanded && (
         <View style={styles.descricaoContainer}>
             <Text style={styles.descricaoTexto}>
@@ -100,9 +89,9 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    marginBottom: 10, // Menos margem entre cards
+    marginBottom: 10, 
     marginHorizontal: 10,
-    padding: 10, // Padding interno reduzido
+    padding: 10, 
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -119,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageContainer: {
-    width: 70,  // Reduzido de 90 para 70
+    width: 70,  
     height: 70, 
     borderRadius: 8,
     overflow: 'hidden',
@@ -142,7 +131,7 @@ const styles = StyleSheet.create({
   },
   nome: {
     fontWeight: '600',
-    fontSize: 14, // Fonte levemente menor
+    fontSize: 14, 
     color: '#333',
     marginBottom: 2,
   },
